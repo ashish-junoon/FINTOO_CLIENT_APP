@@ -370,6 +370,17 @@ export const verifyAadharCardBySalora = async (req) => {
     }
 }
 
+//Get Aadhar Details- Salora
+export const GetAadhaarDetailsBySalora = async (req) => {
+    try {
+        const response = await api.post("/Salora/SaloraDigilockerSaveDetails/Digilocker-SaveDetails", req);
+        return response.data;
+    } catch (error) {
+        console.error("Get Aadhar Details:", error.response?.data || error.message);
+        throw error;
+    }
+}
+
 //Verify Aadhar Card- With OTP
 export const generateAdhaarOTP = async (req) => {
     try {

@@ -3,13 +3,21 @@ import { toast } from "react-toastify";
 import Images from "../../components/content/Images";
 import Button from "../../components/utils/Button";
 import { useUserInfoContext } from "../../components/context/UserInfoContext";
-import { verifyAadharCard, verifyAadharCardBySalora, verifyPANCard, verifyPANCardBySalora } from "../../api/Api_call";
+import { GetAadhaarDetailsBySalora, verifyAadharCard, verifyAadharCardBySalora, verifyPANCard, verifyPANCardBySalora } from "../../api/Api_call";
 import BtnLoader from "../../components/utils/BtnLoader";
 import Card from "../../components/utils/Card";
 import AdharCard from "../../components/utils/AdharCard";
 import PanCard from "../../components/utils/PanCard";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 function StartKYC() {
+  const navigate = useNavigate();
+  // query parameters if exists------------------
+  const [redirectParams, setRedirectParams] = useSearchParams();
+
+  const transactionId = redirectParams.get("txnId");
+  const isSuccess = redirectParams.get("success");
+  // --------------------------------------------
   const [validating, setValidating] = useState(false);
   const [validating2, setValidating2] = useState(false);
   const [countdown, setCountdown] = useState(5);
@@ -21,49 +29,13 @@ function StartKYC() {
   const isAdharVerified = userInfo?.aadhaar_verified;
   const isKYCDone = userInfo?.is_e_kyc_done;
 
-  // // Aadhaar Verification
-  // const handleAdharVerify = async () => {
-  //   setValidating(true);
-  //   const userRequest = {
-  //     user_id: userInfo?.user_id,
-  //     lead_id: userInfo?.lead_id,
-  //     id_number: userInfo?.kycInfo[0]?.aadhaar_number,
-  //     // id_number: "555506094444",
-  //     company_id: import.meta.env.VITE_COMPANY_ID,
-  //     product_name: import.meta.env.VITE_PRODUCT_NAME,
-  //     surl: `${location.origin}/success`,
-  //     furl: `${location.origin}/failure`,
-  //   };
-
-  //   try {
-  //     const data = await verifyAadharCard(userRequest);
-  //     if (data.success) {
-  //       // setUserInfo((prevUserInfo) => ({
-  //       //     ...prevUserInfo,
-  //       //     aadhaar_verified: true,
-  //       // }));
-
-  //       localStorage.setItem("reloaded", "true");
-  //       window.location.href = data?.data?.url;
-  //     } else {
-  //       toast.error(data.message || "Adhar Varification Failed!");
-  //     }
-  //   } catch (error) {
-  //     toast.error("Something went wrong. Please try again.");
-  //     console.error("Error verifying Aadhaar:", error);
-  //   } finally {
-  //     setValidating(false);
-  //   }
-  // };
-
   // Aadhaar Verification by salora
   const handleAdharVerify = async () => {
     setValidating(true);
     const userRequest = {
-      partnerLoanId: userInfo?.lead_id,
-      // id_number: userInfo?.kycInfo[0]?.aadhaar_number,
-      surl: `${location.origin}/success`,
-      furl: `${location.origin}/failure`,
+      // partnerLoanId: userInfo?.lead_id,
+      partnerLoanId: "986524",
+      redirectionUrl: `${location.origin}/process-loan`,
       productinfo: {
         comapnyName: import.meta.env.VITE_COMPANY_ID,
         productName: import.meta.env.VITE_PRODUCT_NAME,
@@ -72,20 +44,19 @@ function StartKYC() {
         createdBy: "user"
       }
     };
-    console.log("req, ", userRequest);
 
     try {
       const data = await verifyAadharCardBySalora(userRequest);
-      if (data.success) {
+      if (data?.model?.url) {
         // setUserInfo((prevUserInfo) => ({
         //     ...prevUserInfo,
         //     aadhaar_verified: true,
         // }));
 
         localStorage.setItem("reloaded", "true");
-        window.location.href = data?.data?.url;
+        window.location.href = data?.model?.kycUrl;
       } else {
-        toast.error(data?.message || "Adhar Varification Failed!");
+        toast.error(data?.message || data?.detail || "Adhar Varification Failed!");
       }
     } catch (error) {
       toast.error("Something went wrong. Please try again.");
@@ -94,6 +65,49 @@ function StartKYC() {
       setValidating(false);
     }
   };
+
+  //(runs only if redirected)
+  useEffect(() => {
+    if(!transactionId) return; //do not proceed without txnid
+    if (isSuccess === false) {
+      navigate("/process-loan");
+      toast.error("Aadhaar verification failed. Please try again!")
+      return;
+    }
+
+    const req = {
+      partnerLoanId: "986524",
+      transactionId: transactionId,
+      productinfo: {
+        comapnyName: import.meta.env.VITE_COMPANY_ID,
+        productName: import.meta.env.VITE_PRODUCT_NAME,
+        userId: userInfo?.user_id,
+        leadId: userInfo?.lead_id,
+        createdBy: "user"
+      },
+    };
+
+    // To Get Adhar Details by salora
+    const GetAdharDetaisBySalora = async () => {
+      try {
+        const response = await GetAadhaarDetailsBySalora(req);
+        if (response.status === 's') {
+          toast.success("Aadhaar verified successfully.")
+        } else {
+          toast.error(response.message || "Aadhaar verification failed. Please try again!");
+        }
+        // console.log(mandateDetails);
+      } catch (error) {
+        console.error("Error in GetMandateDetailsById", error);
+      }
+    };
+    GetAdharDetaisBySalora();
+
+    // Remove the query param after using it
+    redirectParams.delete("txnId");
+    redirectParams.delete("success");
+    setRedirectParams(redirectParams, { replace: true });
+  }, [])
 
   useEffect(() => {
     if (localStorage.getItem("reloaded")) {
@@ -108,7 +122,8 @@ function StartKYC() {
   const handlePanVerify = async () => {
     setValidating2(true);
     const userRequest = {
-      partnerLoanId: userInfo?.lead_id, //*
+      // partnerLoanId: userInfo?.lead_id, //*
+      partnerLoanId: "986524",
       pan: userInfo?.kycInfo[0]?.pan_card_number, //*
       phone_number: userInfo?.mobile_number, //*
       email: userInfo?.personalInfo?.[0]?.email_id, //*

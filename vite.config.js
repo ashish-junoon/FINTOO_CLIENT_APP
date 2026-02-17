@@ -9,9 +9,9 @@ const manifestForPlugIn = {
     maximumFileSizeToCacheInBytes: 25 * 1024 * 1024 // 25 MB
   },
   manifest:{
-    name:"Fintoo",
-    short_name:"Fintoo",
-    description:"Fintoo",
+    name:"Fynto",
+    short_name:"Fynto",
+    description:"Fynto",
     icons:[{
       src: '/android-chrome-192x192.png',
       sizes:'192x192',
