@@ -42,14 +42,13 @@ function ForgetPassword() {
     const mobileFormik = useFormik({
         initialValues: {
             mobileNumber: '',
-
         },
         validationSchema: Yup.object({
             mobileNumber: Yup.string()
                 .matches(/^[6-9]\d{9}$/, 'Invalid mobile number.')
                 .required('Required'),
         }),
-        onSubmit: async values => {
+        onSubmit: async (values, {setSubmitting}) => {
             const userRequest = {
                 mobile_number: values.mobileNumber,
                 company_id: import.meta.env.VITE_COMPANY_ID,
@@ -69,6 +68,8 @@ function ForgetPassword() {
                 }
             } catch (error) {
                 console.error('Reset password failed:', error);
+            } finally {
+                setSubmitting(false);
             }
         },
     });
@@ -83,7 +84,7 @@ function ForgetPassword() {
                 .matches(/^\d{4}$/, 'Invalid OTP.')
                 .required('Required'),
         }),
-        onSubmit: async (values) => {
+        onSubmit: async (values, {setSubmitting}) => {
             const userRequest = {
                 mobile_no: mobileFormik.values.mobileNumber,
                 reg_otp: values.otp,
@@ -101,6 +102,8 @@ function ForgetPassword() {
             } catch (error) {
                 console.error('OTP verification failed:', error);
                 toast.error('An error occurred during OTP verification.');
+            } finally {
+                setSubmitting(false);
             }
         },
     });
@@ -122,7 +125,7 @@ function ForgetPassword() {
                 .oneOf([Yup.ref('password'), null], 'Passwords do not match.')
                 .required('Required'),
         }),
-        onSubmit: async values => {
+        onSubmit: async (values, setSubmitting) => {
             const userRequest = {
                 user_id: userId,
                 password: values.password,
@@ -139,6 +142,8 @@ function ForgetPassword() {
             } catch (error) {
                 toast.error('Something went wrong. Please try again.');
                 console.error('CreatePassword API failed:', error);
+            } finally {
+                setSubmitting(false);
             }
         },
     });
@@ -210,6 +215,7 @@ function ForgetPassword() {
                             <Button
                                 btnName="Get OTP"
                                 btnIcon="RiArrowRightLine"
+                                disabled={mobileFormik.isSubmitting}
                                 type="submit"
                                 style="mt-5 py-1 bg-secondary text-black w-full"
                             />
@@ -272,9 +278,10 @@ function ForgetPassword() {
                             <Button
                                 btnName="Verify OTP"
                                 btnIcon="RiArrowRightLine"
+                                disabled={otpFormik.isSubmitting}
                                 type="submit"
                                 style="mt-4 py-1 bg-secondary text-black hover:bg-secondary w-full"
-                            // onClick={handleVerifyOTP}
+                                // onClick={handleVerifyOTP}
                             />
                         </div>
                     </form>
@@ -327,6 +334,7 @@ function ForgetPassword() {
                                 btnName="Submit"
                                 btnIcon="RiArrowRightLine"
                                 type="submit"
+                                disabled={passwordFormik.isSubmitting}
                                 style="mt-4 py-1 bg-secondary text-black hover:bg-secondary w-full"
                             />
                         </div>

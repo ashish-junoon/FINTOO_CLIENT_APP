@@ -427,7 +427,30 @@ export const registerEMandateEaseBuze = async (req) => {
     }
 }
 
-//Register eMandate Easebuzz
+//Register eMandate Salora
+export const registerEMandateBySalora = async (req) => {
+    try {
+        // const response = await api.post("/Salora/SaloraEMandate/e-Mandate", req);
+        const response = await api.post("/Salora/SaloraEMandate/Combined-Process-eMandate", req);
+        return response.data;
+    } catch (error) {
+        console.error("Register eMandate:", error.response?.data || error.message);
+        throw error;
+    }
+}
+
+//Register eMandate Salora
+export const checkMandateStatusBySalora = async (req) => {
+    try {
+        const response = await api.post("/Salora/SaloraMandateStatus/e-MandateStatus", req);
+        return response.data;
+    } catch (error) {
+        console.error("Register eMandate:", error.response?.data || error.message);
+        throw error;
+    }
+}
+
+// eMandate details Easebuzz
 export const GetMandateDetailsById = async (req) => {
     try {
         const response = await api.post("/EasebuzzIntegration/GetMandateDetailsById", req);

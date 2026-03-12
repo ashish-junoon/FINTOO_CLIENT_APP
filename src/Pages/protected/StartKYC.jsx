@@ -9,6 +9,7 @@ import Card from "../../components/utils/Card";
 import AdharCard from "../../components/utils/AdharCard";
 import PanCard from "../../components/utils/PanCard";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { a } from "framer-motion/client";
 
 function StartKYC() {
   const navigate = useNavigate();
@@ -29,12 +30,13 @@ function StartKYC() {
   const isAdharVerified = userInfo?.aadhaar_verified;
   const isKYCDone = userInfo?.is_e_kyc_done;
 
+
   // Aadhaar Verification by salora
   const handleAdharVerify = async () => {
     setValidating(true);
     const userRequest = {
       // partnerLoanId: userInfo?.lead_id,
-      partnerLoanId: "986524",
+      partnerLoanId: "4787891",
       redirectionUrl: `${location.origin}/process-loan`,
       productinfo: {
         comapnyName: import.meta.env.VITE_COMPANY_ID,
@@ -47,7 +49,7 @@ function StartKYC() {
 
     try {
       const data = await verifyAadharCardBySalora(userRequest);
-      if (data?.model?.url) {
+      if (data?.model?.kycUrl) {
         // setUserInfo((prevUserInfo) => ({
         //     ...prevUserInfo,
         //     aadhaar_verified: true,
@@ -66,9 +68,10 @@ function StartKYC() {
     }
   };
 
+
   //(runs only if redirected)
   useEffect(() => {
-    if(!transactionId) return; //do not proceed without txnid
+    if (!transactionId) return; //do not proceed without txnid
     if (isSuccess === false) {
       navigate("/process-loan");
       toast.error("Aadhaar verification failed. Please try again!")
@@ -76,8 +79,9 @@ function StartKYC() {
     }
 
     const req = {
-      partnerLoanId: "986524",
+      partnerLoanId: "4787894123",
       transactionId: transactionId,
+      aadharNumber: userInfo?.kycInfo[0]?.aadhaar_number,
       productinfo: {
         comapnyName: import.meta.env.VITE_COMPANY_ID,
         productName: import.meta.env.VITE_PRODUCT_NAME,
@@ -91,8 +95,14 @@ function StartKYC() {
     const GetAdharDetaisBySalora = async () => {
       try {
         const response = await GetAadhaarDetailsBySalora(req);
-        if (response.status === 's') {
+        if (response.status == 's') {
+          // check for aadhaar mis-match
+          if (userInfo?.kycInfo[0]?.aadhaar_number.slice(-4) !== response?.maskedAdharNumber.slice(-4)) {
+              toast.error("Aadhaar number mismatched");
+              return;
+          }
           toast.success("Aadhaar verified successfully.")
+          window.location.reload();
         } else {
           toast.error(response.message || "Aadhaar verification failed. Please try again!");
         }
@@ -104,9 +114,9 @@ function StartKYC() {
     GetAdharDetaisBySalora();
 
     // Remove the query param after using it
-    redirectParams.delete("txnId");
-    redirectParams.delete("success");
-    setRedirectParams(redirectParams, { replace: true });
+    // redirectParams.delete("txnId");
+    // redirectParams.delete("success");
+    // setRedirectParams(redirectParams, { replace: true });
   }, [])
 
   useEffect(() => {
@@ -123,7 +133,7 @@ function StartKYC() {
     setValidating2(true);
     const userRequest = {
       // partnerLoanId: userInfo?.lead_id, //*
-      partnerLoanId: "986524",
+      partnerLoanId: "4787894123",
       pan: userInfo?.kycInfo[0]?.pan_card_number, //*
       phone_number: userInfo?.mobile_number, //*
       email: userInfo?.personalInfo?.[0]?.email_id, //*
@@ -213,41 +223,7 @@ function StartKYC() {
     <>
       {!verified && (
         <Card heading="eKYC Verification" style="mx-auto max-w-4xl px-4">
-          <div className="mb-5">
-            <div
-              className={`${isAdharVerified ? "bg-green-100" : "bg-red-200"} rounded-t-lg py-0.5 px-5 flex justify-between items-center`}
-            >
-              <div className="font-semibold text-sm">
-                {isAdharVerified ? (
-                  <span className="text-green-500">Verified</span>
-                ) : (
-                  <span className="text-red-500">Unverified</span>
-                )}
-              </div>
-              <div className="text-xs font-semibold">
-                {!isAdharVerified && (
-                  <Button
-                    btnName={validating ? <BtnLoader /> : "Verify"}
-                    type="button"
-                    style="w-full uppercase py-0.5 px-2 bg-secondary text-[10px] text-black"
-                    btnIcon={!validating ? "MdOutlineCheckCircle" : ""}
-                    disabled={validating}
-                    onClick={handleAdharVerify}
-                  />
-                )}
-              </div>
-            </div>
-            <div className="flex justify-center">
-              <AdharCard
-                name={userInfo?.personalInfo[0]?.full_name}
-                dob={userInfo?.personalInfo[0]?.dob}
-                gender={userInfo?.personalInfo[0]?.gender}
-                aadhaarNumber={userInfo?.kycInfo[0]?.aadhaar_number}
-              />
-            </div>
-          </div>
-
-          <div>
+          <div className="mb-5" >
             <div
               className={`${isPanVerified ? "bg-green-100" : "bg-red-200"} rounded-t-lg py-0.5 px-5 flex justify-between items-center`}
             >
@@ -277,6 +253,40 @@ function StartKYC() {
                 name={userInfo?.personalInfo[0]?.full_name}
                 dob={userInfo?.personalInfo[0]?.dob}
                 panNumber={userInfo?.kycInfo[0]?.pan_card_number}
+              />
+            </div>
+          </div>
+
+          <div className="">
+            <div
+              className={`${isAdharVerified ? "bg-green-100" : "bg-red-200"} rounded-t-lg py-0.5 px-5 flex justify-between items-center`}
+            >
+              <div className="font-semibold text-sm">
+                {isAdharVerified ? (
+                  <span className="text-green-500">Verified</span>
+                ) : (
+                  <span className="text-red-500">Unverified</span>
+                )}
+              </div>
+              <div className="text-xs font-semibold">
+                {!isAdharVerified && (
+                  <Button
+                    btnName={validating ? <BtnLoader /> : "Verify"}
+                    type="button"
+                    style="w-full uppercase py-0.5 px-2 bg-secondary text-[10px] text-black"
+                    btnIcon={!validating ? "MdOutlineCheckCircle" : ""}
+                    disabled={validating}
+                    onClick={handleAdharVerify}
+                  />
+                )}
+              </div>
+            </div>
+            <div className="flex justify-center">
+              <AdharCard
+                name={userInfo?.personalInfo[0]?.full_name}
+                dob={userInfo?.personalInfo[0]?.dob}
+                gender={userInfo?.personalInfo[0]?.gender}
+                aadhaarNumber={userInfo?.kycInfo[0]?.aadhaar_number}
               />
             </div>
           </div>

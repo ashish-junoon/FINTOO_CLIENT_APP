@@ -1,9 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   registerEMandate,
   getTokenPostEmandate,
   getbankCodeListByCode,
   registerEMandateEaseBuze,
+  registerEMandateBySalora,
+  checkMandateStatusBySalora,
 } from "../../api/Api_call";
 import Loader from "../../components/utils/Loader";
 import Button from "../../components/utils/Button";
@@ -21,6 +23,8 @@ function RegisterNach() {
   const [bankCodeListByCode, setbankCodeListByCode] = useState([]);
   const [authMode, setAuthMode] = useState("");
   const [token, setToken] = useState("");
+  const pollRef = useRef(null);
+  const popupRef = useRef(null);
 
   const { userInfo, setUserInfo } = useUserInfoContext();
 
@@ -30,13 +34,18 @@ function RegisterNach() {
       label: "Netbanking",
     },
     cardFlag: {
-      value: "debit_card",
+      // value: "debitcard", //ft
+      value: "debit_card", // pu
       label: "Debit Card",
     },
-    adharFlag: {
-      value: "aadhaar",
-      label: "Aadhaar",
+    upiFlag: { // custom _by salora
+      value: "upi",
+      label: "UPI",
     },
+    // adharFlag: {
+    //   value: "aadhaar",
+    //   label: "Aadhaar",
+    // },
     // panFlag: {
     //   value: "pan",
     //   label: "PAN",
@@ -63,8 +72,8 @@ function RegisterNach() {
     const req = {
       success_url: `${location.origin}/success`,
       failure_url: `${location.origin}/failure`,
-      amount: (userInfo?.getAssignProduct[0]?.loan_amount * 4) || 10,
-      //   amount: 100000,  // Asking permision of 1lakh for mandate
+      // amount: (userInfo?.getAssignProduct[0]?.loan_amount * 4) || 10,
+      amount: 10,  // test
       // amount: userInfo?.selectedproduct[0]?.loan_amount,
       email: userInfo?.personalInfo[0]?.email_id,
       phone: userInfo?.mobile_number,
@@ -99,6 +108,95 @@ function RegisterNach() {
     }
     setLoading(false);
   };
+
+  const registerNACHSalora = async () => {
+    setLoading(true);
+    const req = {
+      success_url: `${location.origin}/success`,
+      failure_url: `${location.origin}/failure`,
+      partnerLoanId: "4787894123",
+      authType: authMode,
+      productinfo: {
+        comapnyName: import.meta.env.VITE_COMPANY_ID,
+        productName: import.meta.env.VITE_PRODUCT_NAME,
+        userId: userInfo?.user_id,
+        leadId: userInfo?.lead_id,
+        createdBy: "user"
+      }
+    };
+    try {
+      const response = await registerEMandateBySalora(req);
+      // console.log("API Response:", response);
+      localStorage.setItem("reloaded", "true");
+      if (!response?.authLink) toast.error("e-nach link could not be generated");
+      else toast.success(response?.message);
+
+      // window.location.href = response?.authLink;
+      console.log(response)
+      // open popup
+      popupRef.current = window.open(
+        response?.authLink,
+        "mandateWindow",
+        "width=600,height=800,scrollbars=yes"
+      );
+      console.log(popupRef.current)
+
+      startPolling();
+      checkPopupClosed(); // check for manual window close
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      toast.error("Something went wrong!");
+    }
+    setLoading(false);
+  };
+
+  // background mandate status check by salora
+  const startPolling = () => {
+    const req = {
+      companyName: import.meta.env.VITE_COMPANY_ID,
+      productName: import.meta.env.VITE_PRODUCT_NAME,
+      userId: userInfo?.user_id,
+      createdBy: "user",
+      leadId: "4787894123"
+    }
+    pollRef.current = setInterval(async () => {
+      try {
+        // const data = await checkMandateStatusBySalora(req);
+        const data = {
+          status: "failed"
+        }
+
+        console.log("Mandate status:", data.status);
+
+        if (
+          data.status === "authorized" ||
+          data.status === "failed" ||
+          data.status === "cancelled"
+        ) {
+          clearInterval(pollRef.current);
+          toast.info("Mandate authorized: ", data?.status)
+
+          if (popupRef.current && !popupRef.current.closed) {
+            popupRef.current.close();
+          }
+          window.location.reload(); // refresh 
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }, 5000);
+  };
+
+  const checkPopupClosed = () => {
+  const interval = setInterval(() => {
+    if (popupRef.current?.closed) {
+      clearInterval(interval);
+      clearInterval(pollRef.current);
+      toast.error("User closed mandate window");
+    }
+  }, 1000);
+};
+
 
   useEffect(() => {
     if (localStorage.getItem("reloaded")) {
@@ -318,13 +416,13 @@ function RegisterNach() {
                 btnName={"Register eMandate"}
                 // disabled={!authMode.length}
                 style={`${!authMode.length
-                    ? "bg-gray-200"
-                    : "bg-primary hover:bg-secondary hover:text-black"
+                  ? "bg-gray-200"
+                  : "bg-primary hover:bg-secondary hover:text-black"
                   } text-white px-4 py-2`}
                 // onClick={registerNACH}
                 onClick={() => {
                   authMode
-                    ? registerNACHEaseBuzz()
+                    ? registerNACHSalora()
                     : toast.error("Please select ENACH Method!");
                 }}
               />
@@ -346,7 +444,7 @@ function RegisterNach() {
           <div className="my-3">
             <p className="text-center text-gray-800">
               Redirecting in{" "}
-              <span className="text-primary font-bold">{countdown}</span>{" "}
+              <span className="text-prary font-bold">{countdown}</span>{" "}
               seconds...
             </p>
           </div>
