@@ -47,8 +47,8 @@ export const GetDataProvider = ({ children }) => {
 
     const getBankList = async () => {
         try {
-            const response = await getEasebuzzBankName();
-            setBankList(response?.data || []);
+            const response = await getBankName();
+            setBankList(response?.bankName || []);
         } catch (error) {
             console.error("Error fetching bank list:", error);
         }

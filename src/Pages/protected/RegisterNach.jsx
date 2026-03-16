@@ -112,10 +112,11 @@ function RegisterNach() {
   const registerNACHSalora = async () => {
     setLoading(true);
     const req = {
-      success_url: `${location.origin}/success`,
-      failure_url: `${location.origin}/failure`,
-      partnerLoanId: "4787894123",
-      authType: authMode,
+      // success_url: `${location.origin}/success`,
+      // failure_url: `${location.origin}/failure`,
+      partnerLoanId: "444444565",
+      // authType: authMode,
+      authType: "netbanking",
       productinfo: {
         comapnyName: import.meta.env.VITE_COMPANY_ID,
         productName: import.meta.env.VITE_PRODUCT_NAME,
@@ -157,7 +158,7 @@ function RegisterNach() {
       productName: import.meta.env.VITE_PRODUCT_NAME,
       userId: userInfo?.user_id,
       createdBy: "user",
-      leadId: "4787894123"
+      leadId: "444444565"
     }
     pollRef.current = setInterval(async () => {
       try {
@@ -179,7 +180,7 @@ function RegisterNach() {
           if (popupRef.current && !popupRef.current.closed) {
             popupRef.current.close();
           }
-          window.location.reload(); // refresh 
+          // window.location.reload(); // refresh 
         }
       } catch (err) {
         console.error(err);
@@ -421,7 +422,7 @@ function RegisterNach() {
                   } text-white px-4 py-2`}
                 // onClick={registerNACH}
                 onClick={() => {
-                  authMode
+                  !authMode
                     ? registerNACHSalora()
                     : toast.error("Please select ENACH Method!");
                 }}
