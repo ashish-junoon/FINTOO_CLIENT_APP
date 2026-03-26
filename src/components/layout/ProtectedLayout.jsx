@@ -106,11 +106,11 @@ function ProtectedLayout() {
                             <div className="flex items-center justify-center mb-0">
                                 <img className="h-8 sm:h-16 w-auto" src={Images.fullLogo || "/placeholder.svg"} alt="Logo" />
                             </div>
-                            <h1 className="text-lg sm:text-xl md:text-2xl font-semibold mb-2 text-center text-black">
-                                Need a <span className="text-primary">quick credit line?</span>
+                            <h1 className="text-lg sm:text-xl md:text-xl font-semibold mb-2 text-center text-black">
+                                Looking for <span className="text-primary">fast credit solutions?</span>
                             </h1>
                             <p className="text-xs sm:text-sm md:text-base text-center text-gray-700">
-                                Complete the form to access financial solutions in just a few clicks.
+                                Fill out the form to quickly unlock your financial solutions in just a few steps.
                             </p>
 
                             <div className="mt-4 px-2 sm:px-4">
@@ -131,7 +131,7 @@ function ProtectedLayout() {
                         {/* Image Section */}
                         <div className="relative min-h-[250px]">
                             <img
-                                className="absolute inset-0 h-full w-full object-cover"
+                                className="absolute inset-0 h-full w-full object-contain"
                                 src={Images.heroImg || "/placeholder.svg"}
                                 alt="Apply User"
                             />

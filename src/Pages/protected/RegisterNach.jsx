@@ -114,7 +114,7 @@ function RegisterNach() {
     const req = {
       // success_url: `${location.origin}/success`,
       // failure_url: `${location.origin}/failure`,
-      partnerLoanId: "444444565",
+      leadid: "4787894123",
       // authType: authMode,
       authType: "netbanking",
       productinfo: {
@@ -131,6 +131,7 @@ function RegisterNach() {
       localStorage.setItem("reloaded", "true");
       if (!response?.authLink) toast.error("e-nach link could not be generated");
       else toast.success(response?.message);
+
 
       // window.location.href = response?.authLink;
       console.log(response)
@@ -158,7 +159,7 @@ function RegisterNach() {
       productName: import.meta.env.VITE_PRODUCT_NAME,
       userId: userInfo?.user_id,
       createdBy: "user",
-      leadId: "444444565"
+      leadId: "4787894123"
     }
     pollRef.current = setInterval(async () => {
       try {
@@ -167,7 +168,7 @@ function RegisterNach() {
           status: "failed"
         }
 
-        console.log("Mandate status:", data.status);
+        // console.log("Mandate status:", data.status);
 
         if (
           data.status === "authorized" ||
@@ -189,14 +190,14 @@ function RegisterNach() {
   };
 
   const checkPopupClosed = () => {
-  const interval = setInterval(() => {
-    if (popupRef.current?.closed) {
-      clearInterval(interval);
-      clearInterval(pollRef.current);
-      toast.error("User closed mandate window");
-    }
-  }, 1000);
-};
+    const interval = setInterval(() => {
+      if (popupRef.current?.closed) {
+        clearInterval(interval);
+        clearInterval(pollRef.current);
+        toast.error("User closed mandate window");
+      }
+    }, 1000);
+  };
 
 
   useEffect(() => {
@@ -210,35 +211,54 @@ function RegisterNach() {
 
   const registerNACH = async () => {
     setLoading(true);
-    const req = {
-      name: userInfo?.personalInfo[0]?.full_name,
-      email: userInfo?.personalInfo[0]?.email_id,
-      contact: userInfo?.mobile_number,
-      // amount: import.meta.env.VITE_NACH_REGISTER_AMOUN,
-      amount: 1,
-      receipt: "Detail of Emaindate Text Free Flow",
-      currenc: import.meta.env.VITE_NACH_REGISTER_AMOUNT,
-      order_notes: {
-        notes_key_1: "Emandate Register Request",
-        notes_key_2: "Paisa Udhaar Mandate",
-      },
-      customer_notes: {
-        notes_key_1:
-          userInfo?.personalInfo[0]?.full_name + "-" + userInfo?.mobile_number,
-        notes_key_2: userInfo?.lead_id + "-" + userInfo?.user_id,
-      },
-      company_id: import.meta.env.VITE_COMPANY_ID,
-      product_name: import.meta.env.VITE_PRODUCT_NAME,
-    };
-    try {
-      const response = await registerEMandate(req);
-      // console.log("API Response:", response);
+    // const req = {
+    // name: userInfo?.personalInfo[0]?.full_name,
+    // email: userInfo?.personalInfo[0]?.email_id,
+    // contact: userInfo?.mobile_number,
+    // amount: import.meta.env.VITE_NACH_REGISTER_AMOUN,
+    // amount: 1,
+    // receipt: "Detail of Emaindate Text Free Flow",
+    // currenc: import.meta.env.VITE_NACH_REGISTER_AMOUNT,
+    // order_notes: {
+    //   notes_key_1: "Emandate Register Request",
+    //   notes_key_2: "Paisa Udhaar Mandate",
+    // },
+    // customer_notes: {
+    //   notes_key_1: userInfo?.personalInfo[0]?.full_name + "-" + userInfo?.mobile_number,
+    //   notes_key_2: userInfo?.lead_id + "-" + userInfo?.user_id,
+    // },
+    //   company_id: import.meta.env.VITE_COMPANY_ID,
+    //   product_name: import.meta.env.VITE_PRODUCT_NAME,
+    // };
 
-      if (response.status) {
-        setRegData(response.data);
+    const req = {
+      mandateType: authMode,
+      comapny_id: import.meta.env.VITE_COMPANY_ID,
+      product_name: import.meta.env.VITE_PRODUCT_NAME,
+      user_id: userInfo?.user_id,
+      lead_id: userInfo?.lead_id,
+      created_by: "user",
+      name: userInfo?.personalInfo?.[0]?.full_name,
+      email: userInfo?.personalInfo?.[0]?.email_id,
+      // email: "testuser8@gmail.com",
+      contact: userInfo?.mobile_number,
+      description: "eMandate by Fynto user",
+      maxAmount: (userInfo?.getAssignProduct[0]?.loan_amount * 4) || 10,
+      // maxAmount: 1000, //10Rs, test purpose
+      accountNumber: userInfo?.bankInfo?.[0]?.account_number,
+      ifsc: userInfo?.bankInfo?.[0]?.ifsc_code,
+    }
+    try {
+      // const response = await registerEMandate(req);
+      const response = await registerEMandateBySalora(req);
+
+      if (response.status === "SUCCESS" || response.status === "issued") {
+        setRegData(response)
+        // toast.success(response?.message)
         setLoading(false);
       } else {
-        console.log(response.message);
+        toast.error(response?.message)
+        console.log(response?.message);
       }
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -248,10 +268,10 @@ function RegisterNach() {
 
   useEffect(() => {
     // console.log(userInfo)
-    if (regData?.order_id) {
+    if (regData?.orderId) {
       handlePayment();
     }
-  }, [regData.order_id]);
+  }, [regData.orderId]);
 
   useEffect(() => {
     const script = document.createElement("script");
@@ -268,19 +288,37 @@ function RegisterNach() {
   const tokenPostEmandate = async () => {
     if (!nachData?.razorpay_payment_id) return;
 
-    const req = {
-      lead_id: userInfo?.lead_id,
-      payment_id: nachData.razorpay_payment_id,
-      order_id: nachData.razorpay_order_id,
-      signature: nachData.razorpay_signature,
-      company_id: import.meta.env.VITE_COMPANY_ID,
+    // checking status of enach
+    // const req = {
+    //   lead_id: userInfo?.lead_id,
+    //   payment_id: nachData.razorpay_payment_id,
+    //   order_id: nachData.razorpay_order_id,
+    //   signature: nachData.razorpay_signature,
+    //   company_id: import.meta.env.VITE_COMPANY_ID,
+    //   product_name: import.meta.env.VITE_PRODUCT_NAME,
+    // };
+
+    const queryReq = {
+      comapny_id: import.meta.env.VITE_COMPANY_ID,
       product_name: import.meta.env.VITE_PRODUCT_NAME,
-    };
+      user_id: userInfo?.user_id,
+      created_by: "user",
+      lead_id: userInfo?.lead_id,
+      orderId: nachData.razorpay_order_id,
+      mandate_account_number: userInfo?.bankInfo?.[0]?.account_number,
+    }
 
     try {
       setLoading(true);
-      const response = await getTokenPostEmandate(req);
-      setToken(response.token_data);
+      // const response = await getTokenPostEmandate(req);
+      const response = await checkMandateStatusBySalora(queryReq);
+      // setToken(response.token_data);
+      if(response?.status === "SUCCESS"){
+        toast.success(response?.message)
+        setToken(response)
+      } else {
+        toast.error("eMandate is not successfull.")
+      }
     } catch (error) {
       console.error(
         "Get Token Post Emandate:",
@@ -292,30 +330,31 @@ function RegisterNach() {
   };
 
   //comented by rk
-  //   useEffect(() => {
-  //     if (nachData) {
-  //       tokenPostEmandate();
-  //     }
-  //   }, [nachData]);
+  useEffect(() => {
+    if (nachData) {
+      tokenPostEmandate();
+    }
+  }, [nachData]);
 
   const handlePayment = () => {
-    if (!regData?.key || !regData?.order_id || !regData?.customer_id) {
+    // if (!regData?.key || !regData?.order_id || !regData?.customer_id) {
+    if (!regData?.orderId || !regData?.customerId) {
       console.error("Missing required payment regData.");
       return;
     }
 
     const options = {
-      key: regData.key,
-      order_id: regData.order_id,
-      customer_id: regData.customer_id,
+      key: "rzp_test_S6SaeMCb026ziW",
+      order_id: regData.orderId,
+      customer_id: regData.customerId,
       recurring: "1",
       handler: (response) => {
         setNachData(response);
-        // console.log("Payment Response:", response);
+        console.log("Payment Response:", response);
       },
       notes: {
         "note_key 1": "Payment for Emandate Registration",
-        "note_key 2": "Paisa Udhaar Mandate.",
+        "note_key 2": "Fynto Mandate.",
       },
       theme: {
         color: "#5484f3",
@@ -326,25 +365,29 @@ function RegisterNach() {
   };
 
   //comented by rk
-  //   useEffect(() => {
-  //     if (token === "") return;
+  useEffect(() => {
+    if (token === "") return;
 
-  //     const timer = setInterval(() => {
-  //       setCountdown((prev) => prev - 1);
-  //     }, 1000);
+    // check for mandate payment captured
+    if (token?.data?.items?.[0]?.status === "captured") toast.success("Mandate Success!")
+    else return;
 
-  //     const redirectTimer = setTimeout(() => {
-  //       setUserInfo((userInfo) => ({
-  //         ...userInfo,
-  //         is_e_nach_activate: true,
-  //       }));
-  //     }, 5000);
+    const timer = setInterval(() => {
+      setCountdown((prev) => prev - 1);
+    }, 1000);
 
-  //     return () => {
-  //       clearInterval(timer);
-  //       clearTimeout(redirectTimer);
-  //     };
-  //   }, [token]);
+    const redirectTimer = setTimeout(() => {
+      setUserInfo((userInfo) => ({
+        ...userInfo,
+        is_e_nach_activate: true,
+      }));
+    }, 5000);
+
+    return () => {
+      clearInterval(timer);
+      clearTimeout(redirectTimer);
+    };
+  }, [token]);
 
   //to get e natch methods for dropdown
   const getEnatchMethods = async (req) => {
@@ -404,28 +447,35 @@ function RegisterNach() {
                 <option className="bg-gray-200" value="" disabled>
                   Select Auth Mode
                 </option>
-                {bankCodeListByCode?.map((mode, index) => {
+                {/* {bankCodeListByCode?.map((mode, index) => {
                   return (
                     <option key={index} className="bg-white" value={mode.value}>
                       {mode.label.toUpperCase()}
                     </option>
                   );
-                })}
+                })} */}
+                {
+                  ['net banking', 'upi']?.map((option, index) => (
+                    <option key={index} className="bg-white" value={option?.replaceAll(" ", "")}> {
+                      option === 'net banking' ? "Net Banking/Aadhaar" : "UPI"
+                    } </option>
+                  ))
+                }
               </select>
 
               <Button
-                btnName={"Register eMandate"}
+                btnName={"Register"}
                 // disabled={!authMode.length}
                 style={`${!authMode.length
                   ? "bg-gray-200"
                   : "bg-primary hover:bg-secondary hover:text-black"
                   } text-white px-4 py-2`}
-                // onClick={registerNACH}
-                onClick={() => {
-                  !authMode
-                    ? registerNACHSalora()
-                    : toast.error("Please select ENACH Method!");
-                }}
+                onClick={registerNACH}
+              // onClick={() => {
+              //   !authMode
+              //     ? registerNACHSalora()
+              //     : toast.error("Please select ENACH Method!");
+              // }}
               />
             </div>
           </div>

@@ -9,7 +9,6 @@ import Card from "../../components/utils/Card";
 import AdharCard from "../../components/utils/AdharCard";
 import PanCard from "../../components/utils/PanCard";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { a } from "framer-motion/client";
 
 function StartKYC() {
   const navigate = useNavigate();
@@ -23,6 +22,27 @@ function StartKYC() {
   const [validating2, setValidating2] = useState(false);
   const [countdown, setCountdown] = useState(5);
   const [verified, setVerified] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalType, setModalType] = useState(''); // 'success' or 'error'
+  const [modalMessage, setModalMessage] = useState('');
+  const [modalCountdown, setModalCountdown] = useState(6);
+
+  // Modal countdown effect
+  useEffect(() => {
+    let interval;
+    if (modalOpen && modalCountdown > 0) {
+      interval = setInterval(() => {
+        setModalCountdown((prev) => prev - 1);
+      }, 1000);
+    } else if (modalOpen && modalCountdown === 0) {
+      setModalOpen(false);
+      if (modalType === 'success') {
+        navigate("/process-loan", { replace: true });
+      }
+      window.location.reload();
+    }
+    return () => clearInterval(interval);
+  }, [modalOpen, modalCountdown, modalType, navigate]);
 
   const { userInfo, setUserInfo } = useUserInfoContext();
 
@@ -34,29 +54,26 @@ function StartKYC() {
   // Aadhaar Verification by salora
   const handleAdharVerify = async () => {
     setValidating(true);
+    const parts = userInfo?.personalInfo[0]?.full_name?.trim().split(/\s+/);
     const userRequest = {
-      // partnerLoanId: userInfo?.lead_id,
-      partnerLoanId: "4787891",
       redirectionUrl: `${location.origin}/process-loan`,
-      productinfo: {
-        comapnyName: import.meta.env.VITE_COMPANY_ID,
-        productName: import.meta.env.VITE_PRODUCT_NAME,
-        userId: userInfo?.user_id,
-        leadId: userInfo?.lead_id,
-        createdBy: "user"
-      }
+      firstName: parts[0] || "",
+      lastName: parts.length > 1 ? parts[parts.length - 1] : "",
+      mobile: userInfo?.mobile_number,
+      emailId: userInfo?.personalInfo[0]?.email_id,
+      comapny_id: import.meta.env.VITE_COMPANY_ID,
+      product_name: import.meta.env.VITE_PRODUCT_NAME,
+      user_id: userInfo?.user_id,
+      lead_id: userInfo?.lead_id,
+      created_by: "user"
     };
 
     try {
       const data = await verifyAadharCardBySalora(userRequest);
-      if (data?.model?.kycUrl) {
-        // setUserInfo((prevUserInfo) => ({
-        //     ...prevUserInfo,
-        //     aadhaar_verified: true,
-        // }));
-
+      if (data?.status === "SUCCESS") {
         localStorage.setItem("reloaded", "true");
-        window.location.href = data?.model?.kycUrl;
+        toast.success(data?.message)
+        window.location.href = data?.model?.kycUrl || data?.model?.url;
       } else {
         toast.error(data?.message || data?.detail || "Adhar Varification Failed!");
       }
@@ -72,39 +89,53 @@ function StartKYC() {
   //(runs only if redirected)
   useEffect(() => {
     if (!transactionId) return; //do not proceed without txnid
-    if (isSuccess === false) {
+    if (isSuccess === "false") {
       navigate("/process-loan");
-      toast.error("Aadhaar verification failed. Please try again!")
+      setModalType('error');
+      setModalMessage("Aadhaar verification failed. Please try again!");
+      setModalOpen(true);
+      setModalCountdown(5);
       return;
     }
 
     const req = {
-      partnerLoanId: "4787894123",
       transactionId: transactionId,
-      aadharNumber: userInfo?.kycInfo[0]?.aadhaar_number,
-      productinfo: {
-        comapnyName: import.meta.env.VITE_COMPANY_ID,
-        productName: import.meta.env.VITE_PRODUCT_NAME,
-        userId: userInfo?.user_id,
-        leadId: userInfo?.lead_id,
-        createdBy: "user"
-      },
+      aadhaar_number: userInfo?.kycInfo?.[0]?.aadhaar_number,
+      comapny_id: import.meta.env.VITE_COMPANY_ID,
+      product_name: import.meta.env.VITE_PRODUCT_NAME,
+      user_id: userInfo?.user_id,
+      lead_id: userInfo?.lead_id,
+      created_by: "user"
     };
 
-    // To Get Adhar Details by salora
+    // To Get Adhar Details by salora (on redirect)
     const GetAdharDetaisBySalora = async () => {
       try {
         const response = await GetAadhaarDetailsBySalora(req);
-        if (response.status == 's') {
+        if (response.status == 'SUCCESS') {
           // check for aadhaar mis-match
-          if (userInfo?.kycInfo[0]?.aadhaar_number.slice(-4) !== response?.maskedAdharNumber.slice(-4)) {
-              toast.error("Aadhaar number mismatched");
-              return;
+          if (userInfo?.kycInfo[0]?.aadhaar_number.slice(-4) !== response?.model?.maskedAdharNumber.slice(-4)) {
+            setModalType('error');
+            setModalMessage("Aadhaar number mismatched");
+            setModalOpen(true);
+            setModalCountdown(5);
+            return;
           }
-          toast.success("Aadhaar verified successfully.")
-          window.location.reload();
+          setUserInfo((prevUserInfo) => ({
+            ...prevUserInfo,
+            address_info_verified: true,
+          }));
+          setModalType('success');
+          setModalMessage("Aadhaar verified successfully.");
+          setModalOpen(true);
+          setModalCountdown(5);
+          // window.location.reload(); // This will be handled by modal countdown
+          // navigate("/process-loan", { replace: true }); // This will be handled by modal countdown
         } else {
-          toast.error(response.message || "Aadhaar verification failed. Please try again!");
+          setModalType('error');
+          setModalMessage(response.message || "Aadhaar verification failed. Please try again!");
+          setModalOpen(true);
+          setModalCountdown(5);
         }
         // console.log(mandateDetails);
       } catch (error) {
@@ -114,15 +145,15 @@ function StartKYC() {
     GetAdharDetaisBySalora();
 
     // Remove the query param after using it
-    // redirectParams.delete("txnId");
-    // redirectParams.delete("success");
-    // setRedirectParams(redirectParams, { replace: true });
-  }, [])
+    redirectParams.delete("txnId");
+    redirectParams.delete("success");
+    setRedirectParams(redirectParams, { replace: true });
+  }, [transactionId, isSuccess])
 
   useEffect(() => {
     if (localStorage.getItem("reloaded")) {
       setTimeout(() => {
-        window.location.reload();
+        // window.location.reload();
       }, 100);
     }
     localStorage.removeItem("reloaded");
@@ -132,32 +163,25 @@ function StartKYC() {
   const handlePanVerify = async () => {
     setValidating2(true);
     const userRequest = {
-      // partnerLoanId: userInfo?.lead_id, //*
-      partnerLoanId: "4787894123",
-      pan: userInfo?.kycInfo[0]?.pan_card_number, //*
-      phone_number: userInfo?.mobile_number, //*
-      email: userInfo?.personalInfo?.[0]?.email_id, //*
-      income: userInfo?.employmentInfo?.[0]?.net_monthly_salary * 12, //*
-      occupation: 1, //*
-      productinfo: {
-        comapnyName: import.meta.env.VITE_COMPANY_ID,
-        productName: import.meta.env.VITE_PRODUCT_NAME,
-        userId: userInfo?.user_id,
-        leadId: userInfo?.lead_id,
-        createdBy: "user"
-      }
+      pan: userInfo?.kycInfo[0]?.pan_card_number,
+      comapny_id: import.meta.env.VITE_COMPANY_ID,
+      product_name: import.meta.env.VITE_PRODUCT_NAME,
+      user_id: userInfo?.user_id,
+      lead_id: userInfo?.lead_id,
+      created_by: "user",
+      // client_ref_num: crypto.randomUUID(),
     };
 
     try {
       const data = await verifyPANCardBySalora(userRequest);
-      if (data.status === 1) {
+      if (data?.status === 1 || data?.status === "SUCCESS") {
         setUserInfo((prevUserInfo) => ({
           ...prevUserInfo,
           pan_verified: true,
         }));
         toast.success(data?.message || "Pan Varification Successfull!");
       } else {
-        toast.error(data?.data?.failure_reason || "Pan Varification Failed!");
+        toast.error(data?.message || "Pan Varification Failed!");
       }
     } catch (error) {
       toast.error("Something went wrong. Please try again.");
@@ -177,20 +201,6 @@ function StartKYC() {
       return () => clearTimeout(timeout);
     }
   }, [isPanVerified, isAdharVerified]);
-
-  // Update eKYC state when both documents are verified
-  // useEffect(() => {
-  //     if (isPanVerified && isAdharVerified) {
-  //         const timeout = setTimeout(() => {
-  //             setUserInfo(prev => ({
-  //                 ...prev,
-  //                 is_e_kyc_done: true,
-  //             }));
-  //         }, 3000);
-
-  //         return () => clearTimeout(timeout);
-  //     }
-  // }, [isPanVerified, isAdharVerified]);
 
   const handleEkycDone = () => {
     setUserInfo((prev) => ({
@@ -223,41 +233,7 @@ function StartKYC() {
     <>
       {!verified && (
         <Card heading="eKYC Verification" style="mx-auto max-w-4xl px-4">
-          <div className="mb-5" >
-            <div
-              className={`${isPanVerified ? "bg-green-100" : "bg-red-200"} rounded-t-lg py-0.5 px-5 flex justify-between items-center`}
-            >
-              <div className="font-semibold text-sm">
-                {isPanVerified ? (
-                  <span className="text-green-500">Verified</span>
-                ) : (
-                  <span className="text-red-500">Unverified</span>
-                )}
-              </div>
-              <div className="text-xs font-semibold">
-                {!isPanVerified && (
-                  <Button
-                    btnName={validating2 ? <BtnLoader /> : "Verify"}
-                    type="button"
-                    style="w-full uppercase py-0.5 px-2 bg-secondary text-[10px] text-black"
-                    btnIcon={!validating ? "MdOutlineCheckCircle" : ""}
-                    disabled={validating}
-                    onClick={handlePanVerify}
-                  />
-                )}
-              </div>
-            </div>
-
-            <div className="flex justify-center">
-              <PanCard
-                name={userInfo?.personalInfo[0]?.full_name}
-                dob={userInfo?.personalInfo[0]?.dob}
-                panNumber={userInfo?.kycInfo[0]?.pan_card_number}
-              />
-            </div>
-          </div>
-
-          <div className="">
+          <div className="mb-5">
             <div
               className={`${isAdharVerified ? "bg-green-100" : "bg-red-200"} rounded-t-lg py-0.5 px-5 flex justify-between items-center`}
             >
@@ -290,6 +266,40 @@ function StartKYC() {
               />
             </div>
           </div>
+
+          <div className="" >
+            <div
+              className={`${isPanVerified ? "bg-green-100" : "bg-red-200"} rounded-t-lg py-0.5 px-5 flex justify-between items-center`}
+            >
+              <div className="font-semibold text-sm">
+                {isPanVerified ? (
+                  <span className="text-green-500">Verified</span>
+                ) : (
+                  <span className="text-red-500">Unverified</span>
+                )}
+              </div>
+              <div className="text-xs font-semibold">
+                {!isPanVerified && (
+                  <Button
+                    btnName={validating2 ? <BtnLoader /> : "Verify"}
+                    type="button"
+                    style="w-full uppercase py-0.5 px-2 bg-secondary text-[10px] text-black"
+                    btnIcon={!validating ? "MdOutlineCheckCircle" : ""}
+                    disabled={validating}
+                    onClick={handlePanVerify}
+                  />
+                )}
+              </div>
+            </div>
+
+            <div className="flex justify-center">
+              <PanCard
+                name={userInfo?.personalInfo[0]?.full_name}
+                dob={userInfo?.personalInfo[0]?.dob}
+                panNumber={userInfo?.kycInfo[0]?.pan_card_number}
+              />
+            </div>
+          </div>
         </Card>
       )}
 
@@ -318,6 +328,32 @@ function StartKYC() {
             </p>
           </div>
         </Card>
+      )}
+      
+      {/* Custom Modal for Verification Results */}
+      {modalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-start z-50 ps-12">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
+            <div className={`px-4 py-1 rounded-t-lg ${modalType === 'success' ? 'bg-green-500' : 'bg-red-500'} text-white`}>
+              <h3 className="text-lg font-semibold">
+                {modalType == 'success' ? 'Verification Successful' : 'Verification Failed'}
+              </h3>
+            </div>
+            <div className="p-6 text-center">
+              <div className="mb-4">
+                {modalType === 'success' ? (
+                  <div className="text-green-500 text-6xl mb-4">✓</div>
+                ) : (
+                  <div className="text-red-500 text-6xl mb-4">✕</div>
+                )}
+              </div>
+              <p className="text-lg mb-4 text-gray-800">{modalMessage || "verification response"}</p>
+              <p className="text-sm text-gray-600">
+                This window will close in <span className="font-bold text-primary">{modalCountdown}</span> seconds and refresh the page.
+              </p>
+            </div>
+          </div>
+        </div>
       )}
     </>
   );

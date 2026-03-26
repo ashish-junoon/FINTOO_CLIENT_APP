@@ -67,6 +67,7 @@ function ProcessApp() {
             {isKycDone === true && userInfo?.is_e_nach_activate === false && (
                 <RegisterNach />
                 // <AcceptTerms />
+
             )}
 
             {/* Sanction Agreement */}

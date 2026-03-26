@@ -1,5 +1,3 @@
-
-
 import { useSearchParams, useNavigate } from "react-router-dom";
 import Images from "../../components/content/Images";
 import { useEffect, useState } from "react";

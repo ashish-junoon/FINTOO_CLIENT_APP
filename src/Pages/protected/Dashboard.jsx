@@ -583,11 +583,11 @@ function Dashboard() {
                                     <div
                                         className={`px-4 py-2 text-white shadow rounded ${userInfo?.cibilCreditScores[0]?.credit_score <= 500
                                             ? "bg-danger"
-                                            : userInfo?.cibilCreditScores[0]?.credit_score >= 501 &&
-                                                userInfo?.cibilCreditScores[0]?.credit_score <= 674
+                                            : userInfo?.cibilCreditScores[0 || 1]?.credit_score >= 501 &&
+                                                userInfo?.cibilCreditScores[0 || 1]?.credit_score <= 674
                                                 ? "bg-warning"
-                                                : userInfo?.cibilCreditScores[0]?.credit_score >= 675 &&
-                                                    userInfo?.cibilCreditScores[0]?.credit_score <= 750
+                                                : userInfo?.cibilCreditScores[0 || 1]?.credit_score >= 675 &&
+                                                    userInfo?.cibilCreditScores[0 || 1]?.credit_score <= 750
                                                     ? "bg-success"
                                                     : "bg-[#0de20d]"
                                             }`}

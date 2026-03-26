@@ -1,5 +1,5 @@
 import logo from '../../assets/logo.png';
-import fullLogo from '../../assets/logo/Fintoo.png';
+import fullLogo from '../../assets/logo/fynto.png';
 import heroImg from '../../assets/heroImg.png';
 import profileImg from '../../assets/dp.jpg';
 import moneyBag from '../../assets/bag-rupee.png';

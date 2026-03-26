@@ -63,7 +63,7 @@ function AcceptTerms() {
             if (response.status) {
                 setAgreementData(response.html_agreement_letter);
             } else {
-                console.log(response.message);
+                toast.log(response?.message || "Something went wrong fetching agreement letter.");
             }
         } catch (error) {
             console.error("Error fetching data:", error);
@@ -87,8 +87,9 @@ function AcceptTerms() {
 
             if (response.status) {
                 setSanctionData(response.html_sanction_letter);
+                // console.log(response?.html_sanction_letter);
             } else {
-                console.log(response.message);
+                toast.log(response?.message || "Something went wrong fetching sanction letter.");
             }
         } catch (error) {
             console.error("Error fetching data:", error);
@@ -185,16 +186,16 @@ function AcceptTerms() {
         <>
             <div className="">
                 <div>
-                    <div className="h-[450px] overflow-y-auto ">
-                        <div className="mb-14">
+                    <div className="h-[500px] overflow-y-auto ">
+                        <div className="mb-12">
                             {sanctionData && <div className="" dangerouslySetInnerHTML={{ __html: sanctionData }} />}
                         </div>
                         <div className="border border-gray-200 px-5 shadow-md rounded bg-gray-50">
 
                             {!isChecked && (
                                 <div className="my-4">
-                                    <input className="mr-2" type="checkbox" onChange={isRead ? handleCheck : handleAggree} checked={isChecked} />
-                                    <span>I have read and agree to the
+                                    <input className="mr-2" type="checkbox" id="agreed_check" onChange={isRead ? handleCheck : handleAggree} checked={isChecked} />
+                                    <label htmlFor="agreed_check" className="inline">I have read and agree to the
                                         <Link
                                             className="text-blue-500 underline px-2"
                                             target="_blank"
@@ -202,7 +203,7 @@ function AcceptTerms() {
                                         >
                                             Agreement
                                         </Link>
-                                        & Sanction Terms, and I provide my consent via OTP.</span>
+                                        & Sanction Terms, and I provide my consent via OTP.</label>
                                 </div>
                             )}
 
@@ -246,7 +247,7 @@ function AcceptTerms() {
                             btnName={isLoading ? <BtnLoader /> : "Close & Continue"}
                             btnIcon={isLoading ? null : ""}
                             onClick={handleClose}
-                            style={`mt-4 py-1 px-2 ${isLoading ? "bg-blue-500" : "bg-[#ae275f]"} text-white w-3/6`}
+                            style={`mt-4 py-1 px-2 ${isLoading ? "bg-blue-500" : "bg-primary"} text-white w-3/6`}
                             disabled={isLoading}
                         />
                     </div>
