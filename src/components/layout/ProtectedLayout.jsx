@@ -16,7 +16,7 @@ function ProtectedLayout() {
     };
 
     return (
-        <div className="flex flex-col lg:flex-row min-h-screen w-full">
+        <div className="flex flex-col lg:flex-row h-screen w-full">
             
             {/* Left Section - Full width on mobile, 40% on lg+ */}
             <div className="w-full lg:w-2/5 h-auto lg:h-screen overflow-y-auto bg-white">
@@ -97,7 +97,7 @@ function ProtectedLayout() {
             </div>
 
             {/* Right Section - Hidden on small screens, 60% width on lg+ */}
-            <div className="hidden lg:flex flex-col w-3/5 h-screen bg-primary text-white items-center justify-center p-4 lg:p-10">
+            <div className="hidden lg:flex flex-col w-3/5 h-screen bg-[#2ec4b6] text-white items-center justify-center p-4 lg:p-10">
                 <div className="bg-white rounded-lg shadow-lg w-full max-w-3xl overflow-hidden">
                     <div className="grid grid-cols-1 lg:grid-cols-2">
 

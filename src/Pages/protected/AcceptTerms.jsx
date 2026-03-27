@@ -63,7 +63,7 @@ function AcceptTerms() {
             if (response.status) {
                 setAgreementData(response.html_agreement_letter);
             } else {
-                toast.log(response?.message || "Something went wrong fetching agreement letter.");
+                console.log(response?.message || "Something went wrong fetching agreement letter.");
             }
         } catch (error) {
             console.error("Error fetching data:", error);
@@ -89,7 +89,7 @@ function AcceptTerms() {
                 setSanctionData(response.html_sanction_letter);
                 // console.log(response?.html_sanction_letter);
             } else {
-                toast.log(response?.message || "Something went wrong fetching sanction letter.");
+                console.log(response?.message || "Something went wrong fetching sanction letter.");
             }
         } catch (error) {
             console.error("Error fetching data:", error);

@@ -31,7 +31,7 @@ const AdharCard = ({
                     {/* <img src={imageUrl} alt="Profile" className="w-20 h-24 object-cover border border-gray-400 rounded-sm" /> */}
                     <div className="text-sm space-y-1 text-gray-800">
                         <p><strong>{name}</strong></p>
-                        <p><strong>DOB:</strong> {dob}</p>
+                        <p><strong>DOB:</strong> XX-XX-{dob.slice(-4)}</p>
                         <p><strong>Gender:</strong> {gender}</p>
                     </div>
                 </div>
@@ -40,7 +40,7 @@ const AdharCard = ({
 
             {/* Aadhaar Number */}
             <div className="mt-2 text-center text-base tracking-widest font-semibold">
-                {aadhaarNumber}
+                XXXXXXXXXXXX{aadhaarNumber.slice(-4)}
             </div>
 
             {/* Footer line */}
