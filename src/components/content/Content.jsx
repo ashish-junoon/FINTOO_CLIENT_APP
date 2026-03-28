@@ -1,8 +1,8 @@
 const heroPoints = [
-    { id: 1, icon: "GiMoneyStack", text: "Instant Approval" },
-    { id: 2, icon: "IoEyeOffOutline", text: "No Hidden Charges" },
-    { id: 3, icon: "RiDiscountPercentLine", text: "Competitive Interest" },
-    { id: 4, icon: "IoDocumentsOutline", text: "Minimal Documentation" },
+    { id: 1, icon: "GiMoneyStack", text: "Quick Approval" },
+    { id: 2, icon: "IoEyeOffOutline", text: "No Hidden Fees" },
+    { id: 3, icon: "RiDiscountPercentLine", text: "Attractive Interest Rates" },
+    { id: 4, icon: "IoDocumentsOutline", text: "Hassle-Free Documentation" },
 ];
 
 const genderOptions = [

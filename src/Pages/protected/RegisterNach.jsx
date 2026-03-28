@@ -314,7 +314,7 @@ function RegisterNach() {
       const response = await checkMandateStatusBySalora(queryReq);
       // setToken(response.token_data);
       if(response?.status === "SUCCESS"){
-        toast.success(response?.message)
+        // toast.success(response?.message)
         setToken(response)
       } else {
         toast.error("eMandate is not successfull.")

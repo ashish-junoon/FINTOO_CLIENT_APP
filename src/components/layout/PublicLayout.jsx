@@ -11,7 +11,7 @@ function PublicLayout() {
             {/* Left Section - Hidden on small screens, full width on md, 60% width on lg+ */}
 
             {/* Right Section - Full width on mobile and md, 40% on lg+ */}
-            <div className="w-full lg:w-2/5 md:h-auto lg:h-screen overflow-y-auto bg-white order-1 lg:order-0">
+            <div className="w-full lg:w-3/6 md:h-auto lg:h-screen overflow-y-auto bg-white order-1 lg:order-0">
                 {/* Mobile-only header - visible on small and medium screens */}
                 <div className="md:hidden bg-white shadow-lg p-4">
                     <div className="flex items-center justify-center">
@@ -25,7 +25,7 @@ function PublicLayout() {
                 </div>
             </div>
 
-            <div className="hidden md:flex flex-col md:w-full lg:w-3/5 md:h-auto lg:h-screen bg-primary text-white items-center justify-center p-4 md:p-6 lg:p-10 order-0 lg:order-1">
+            <div className="hidden md:flex flex-col md:w-full lg:w-3/6 md:h-auto lg:h-screen bg-primary text-white items-center justify-center p-4 md:p-6 lg:p-10 order-0 lg:order-1">
                 <div className="bg-white rounded-lg shadow-lg w-full max-w-3xl overflow-hidden">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-0">
                         
