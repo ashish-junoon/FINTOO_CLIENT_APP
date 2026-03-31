@@ -181,7 +181,7 @@ function RegisterNach() {
           if (popupRef.current && !popupRef.current.closed) {
             popupRef.current.close();
           }
-          // window.location.reload(); // refresh 
+          window.location.reload(); // refresh 
         }
       } catch (err) {
         console.error(err);

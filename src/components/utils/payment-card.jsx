@@ -205,7 +205,7 @@ const PaymentCard = ({ emiData, emisheduleData }) => {
   useEffect(() => {
     if (localStorage.getItem("reloaded")) {
       setTimeout(() => {
-        // window.location.reload();
+        window.location.reload();
       }, 100);
     }
     localStorage.removeItem("reloaded");
