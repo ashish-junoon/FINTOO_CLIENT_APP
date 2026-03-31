@@ -156,7 +156,7 @@ const PaymentCard = ({ emiData, emisheduleData }) => {
           user_id: userInfo?.user_id,
           lead_id: userInfo?.lead_id,
           created_by: "user",
-          company_id: import.meta.env.VITE_COMPANY_ID,
+          comapny_id: import.meta.env.VITE_COMPANY_ID,
           product_name: import.meta.env.VITE_PRODUCT_NAME,
           p_id: plink,
           reference_id: ref_id,

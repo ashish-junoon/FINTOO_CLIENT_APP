@@ -243,7 +243,7 @@ function RegisterNach() {
       // email: "testuser8@gmail.com",
       contact: userInfo?.mobile_number,
       description: "eMandate by Fynto user",
-      maxAmount: (userInfo?.getAssignProduct[0]?.loan_amount * 4) || 10,
+      maxAmount: Math.trunc(userInfo?.getAssignProduct[0]?.loan_amount * 4 * 100) || 10, // *100 to convert to paise
       // maxAmount: 1000, //10Rs, test purpose
       accountNumber: userInfo?.bankInfo?.[0]?.account_number,
       ifsc: userInfo?.bankInfo?.[0]?.ifsc_code,
