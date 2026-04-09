@@ -6,6 +6,7 @@ import RegisterNach from "./RegisterNach"
 import StartKYC from "./StartKYC"
 import { useUserInfoContext } from "../../components/context/UserInfoContext"
 import { useAuth } from "../../components/context/AuthContext"
+import VideoRecorder from "../../components/utils/VideoRecorder"
 
 function ProcessApp() {
 
@@ -17,6 +18,7 @@ function ProcessApp() {
     const isConsent = userInfo?.selectedproduct[0]?.otp_consent_verified
     const isLoanConsent = userInfo?.is_loan_consent
     const isKycDone = userInfo?.is_e_kyc_done
+    const isVideoKycDone = userInfo?.video_kyc_verified;
 
 
     // alert(userInfo?.is_loan_consent)
@@ -58,20 +60,23 @@ function ProcessApp() {
                 <OfferLoan />
             )}
 
+            {/* Video Kyc  */}
+            {isConsent === true && userInfo?.video_kyc_verified === false && <VideoRecorder />}
+
             {/* Start KYC */}
-            {isConsent === true && userInfo?.is_e_kyc_done === false && (
+            {isVideoKycDone === true && userInfo?.is_e_kyc_done === false && isConsent && (
                 <StartKYC />
             )}
 
             {/* Register eNACH */}
-            {isKycDone === true && userInfo?.is_e_nach_activate === false && (
+            {isKycDone === true && userInfo?.is_e_nach_activate === false && isVideoKycDone && (
                 <RegisterNach />
                 // <AcceptTerms />
 
             )}
 
             {/* Sanction Agreement */}
-            {userInfo?.is_e_nach_activate === true && isLoanConsent === false && (
+            {userInfo?.is_e_nach_activate === true && isLoanConsent === false && isVideoKycDone && (
                 <AcceptTerms />
             )}
 

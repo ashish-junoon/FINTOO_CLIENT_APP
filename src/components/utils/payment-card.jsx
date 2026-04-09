@@ -215,7 +215,7 @@ const PaymentCard = ({ emiData, emisheduleData }) => {
     <>
       {emisheduleData?.payment_status !== "Processing" ? (
         <div
-          className={`w-full max-w-md rounded-xl shadow-lg overflow-hidden ${isOverdue ? "bg-gradient-to-r from-rose-50 to-rose-100" : "bg-white"
+          className={`w-full max-w-lg mx-auto rounded-xl shadow-lg overflow-hidden ${isOverdue ? "bg-gradient-to-r from-rose-50 to-rose-100" : "bg-white"
             }`}
         >
           <div className="p-6">

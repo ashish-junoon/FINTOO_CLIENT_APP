@@ -589,7 +589,19 @@ export const getUserDocuments = async (req) => {
     }
 }
 
-
+//User live Video Kyc
+export const UploadOtherDocumentsVideo = async (formData) => {
+  try {
+    const response = await api.post("/Admin/AddOtherVideoKycDocuments", formData, {
+      headers: {"Content-Type": "multipart/form-data",},
+      maxContentLength: Infinity, maxBodyLength: Infinity,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Upload Other Documents error:", error.response?.data || error.message);
+    throw error;
+  }
+};
 
 //------------------------------------------    
 // PAYMENT INTEGRATION

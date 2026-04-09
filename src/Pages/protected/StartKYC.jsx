@@ -58,7 +58,7 @@ function StartKYC() {
     const userRequest = {
       redirectionUrl: `${location.origin}/process-loan`,
       firstName: parts[0] || "",
-      lastName: parts.length > 1 ? parts[parts.length - 1] : "",
+      lastName: parts.length > 1 ? parts[parts.length - 1] : parts[0],
       mobile: userInfo?.mobile_number,
       emailId: userInfo?.personalInfo[0]?.email_id,
       comapny_id: import.meta.env.VITE_COMPANY_ID,

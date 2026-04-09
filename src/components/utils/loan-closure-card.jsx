@@ -123,7 +123,7 @@ const LoanClosureCard = ({ customerName, maxEligibleAmount }) => {
                 <div className="px-8 py-3 flex flex-col justify-center items-center">
                     <h1 className="text-lg font-gray-400 font-semibold py-5 ">Please click the button below to apply for a reloan.</h1>
                     <p className="text-sm border border-gray-400 lg:mx-6 p-5">Note: Once you apply for a reloan, you will be logged out from the current session. You will need to log in again to view your status.</p>
-                    <button onClick={handleApplyNow} className="px-8 py-2 bg-secondary text-black rounded-md mt-4 ">Submit</button>
+                    <button disabled={isApplying} onClick={handleApplyNow} className="px-8 py-2 bg-secondary text-black rounded-md mt-4 ">Submit</button>
                 </div>
             </Modal>
         </div >
