@@ -33,7 +33,7 @@ export const GetDocProvider = ({ children }) => {
     }, [userInfo?.user_id, userInfo?.lead_id]);
 
     return (
-        <GetDocContext.Provider value={{ documents }}>
+        <GetDocContext.Provider value={{ documents, getDocuments }}>
             {children}
         </GetDocContext.Provider>
     );

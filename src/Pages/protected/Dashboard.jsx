@@ -452,7 +452,7 @@ function Dashboard() {
                             message: userInfo?.is_loan_consent === true
                                 ? "Congratulations! Your application has been approved for the credit line. It will be deposited into your account soon."
                                 : "Your application has been approved for the credit line. Please continue to complete your KYC & finish application.",
-                            button: userInfo?.is_loan_consent === false ? true : false,
+                            button: (userInfo?.is_loan_consent === false || userInfo?.video_kyc_verified === false) ? true : false,
                         },
                         5: {
                             heading: "Credit Line Approved",

@@ -332,7 +332,7 @@ const VideoRecorder = ({ }) => {
                         video_kyc_verified: false,
                       })));
                   }}
-                  className="px-2 py-1 bg-secondary text-white rounded mt-1 w-full"
+                  className="px-2 py-1 bg-orange-400 text-white rounded mt-1 w-full"
                 >
                   Cancle
                 </button>

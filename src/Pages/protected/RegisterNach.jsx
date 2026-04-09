@@ -186,7 +186,7 @@ function RegisterNach() {
       } catch (err) {
         console.error(err);
       }
-    }, 5000);
+    }, 4000);
   };
 
   const checkPopupClosed = () => {

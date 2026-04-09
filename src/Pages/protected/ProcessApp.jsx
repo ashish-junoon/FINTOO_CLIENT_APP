@@ -25,12 +25,20 @@ function ProcessApp() {
     // alert(userInfo?.selectedproduct[0]?.otp_consent_verified)
     // alert(userInfo?.selectedproduct.length)
 
-    useEffect(() => {
-        if (userInfo?.is_loan_consent === true || userInfo?.getAssignProduct.length === 0) {
-            navigate("/");
-        }
-    }, [userInfo, navigate]);
-
+    // useEffect(() => {
+    //     if (userInfo?.is_loan_consent === true || userInfo?.getAssignProduct.length === 0) {
+    //         navigate("/");
+    //     }
+    // }, [userInfo, navigate]);
+useEffect(() => {
+    if (
+      userInfo?.video_kyc_verified &&
+      userInfo?.is_loan_consent === true ||
+      userInfo?.getAssignProduct.length === 0
+    ) {
+      navigate("/");
+    }
+  }, [userInfo, navigate]);
 
     useEffect(() => {
         if (loggedUser?.bank_info_fill === false) {

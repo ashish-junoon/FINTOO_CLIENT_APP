@@ -49,7 +49,7 @@ const LoanClosureCard = ({ customerName, maxEligibleAmount }) => {
 
 
     return (
-        <div className="w-full max-w-md overflow-hidden rounded bg-white shadow-lg">
+        <div className="w-full max-w-lg mx-auto overflow-hidden rounded bg-white shadow-lg">
             {/* Confetti-like top border */}
             <div className="h-2 bg-primary"></div>
 

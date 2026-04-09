@@ -46,7 +46,7 @@ function App() {
             <Route element={<ProtectedLayout />}>
               <Route path="/" element={<Dashboard />} />
               <Route path="/apply-loan" element={!isApplied ? <Application /> : <Navigate to="/" replace />} />
-              <Route path="/process-loan" element={!userInfo?.is_loan_consent ? <ProcessApp /> : <Navigate to="/" replace />} />
+              <Route path="/process-loan" element={(!userInfo?.is_loan_consent || !userInfo?.video_kyc_verified) ? <ProcessApp /> : <Navigate to="/" replace />} />
               <Route path="/my-loan" element={<Loan />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/login" element={<Navigate to="/" />} />

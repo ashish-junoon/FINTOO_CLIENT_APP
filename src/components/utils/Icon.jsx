@@ -11,19 +11,19 @@ import * as Fa from 'react-icons/fa';
 const Icon = ({ name, size = 24, color = 'currentColor', style = {} }) => {
     let IconComponent;
 
-    if (name.startsWith('Ri')) {
+    if (name?.startsWith('Ri')) {
         IconComponent = Ri[name];
-    } else if (name.startsWith('Md')) {
+    } else if (name?.startsWith('Md')) {
         IconComponent = Md[name];
-    } else if (name.startsWith('Io')) {
+    } else if (name?.startsWith('Io')) {
         IconComponent = Io[name];
-    } else if (name.startsWith('Gi')) {
+    } else if (name?.startsWith('Gi')) {
         IconComponent = Gi[name];
-    } else if (name.startsWith('Pi')) {
+    } else if (name?.startsWith('Pi')) {
         IconComponent = Pi[name];
-    } else if (name.startsWith('Go')) {
+    } else if (name?.startsWith('Go')) {
         IconComponent = Go[name];
-    } else if (name.startsWith('Fa')) {
+    } else if (name?.startsWith('Fa')) {
         IconComponent = Fa[name];
     }
     // Add more conditions for other icon sets
