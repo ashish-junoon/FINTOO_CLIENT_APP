@@ -126,19 +126,19 @@ function MakePayment() {
                                 <div className='grid grid-cols-2 gap-4'>
                                     <div>
                                         <div className='text-black font-semibold'>Mobile Number</div>
-                                        <div>+91{paymentInfo?.mobile_number}</div>
+                                        <div>{paymentInfo?.mobile_number ? '+91 '+paymentInfo?.mobile_number : "N/A"}</div>
                                     </div>
                                     <div>
                                         <div className='text-black font-semibold'>Due Date</div>
-                                        <div>{paymentInfo?.emiToPayment?.due_date}</div>
+                                        <div>{paymentInfo?.emiToPayment?.due_date || "N/A"}</div>
                                     </div>
                                     <div>
                                         <div className='text-black font-semibold'>Penal Days</div>
-                                        <div>{paymentInfo?.emiToPayment?.days_past_due}</div>
+                                        <div>{paymentInfo?.emiToPayment?.days_past_due || "N/A"}</div>
                                     </div>
                                     <div>
                                         <div className='text-black font-semibold'>Penal Interest</div>
-                                        <div>₹{paymentInfo?.emiToPayment?.dpd_interest}</div>
+                                        <div>{paymentInfo?.emiToPayment?.dpd_interest ? '₹'+paymentInfo?.emiToPayment?.dpd_interest : "N/A"}</div>
                                     </div>
                                 </div>
                             </div>
@@ -146,11 +146,11 @@ function MakePayment() {
                             <div className='mt-5'>
                                 <div className='flex items-center flex-col'>
                                     <div className='text-black text-sm italic'>Paying for Loan Account Number:</div>
-                                    <div className='text-black text-sm font-semibold'>{paymentInfo?.loan_id}</div>
+                                    <div className='text-black text-sm font-semibold'>{paymentInfo?.loan_id || "N/A"}</div>
                                 </div>
                                 <div className='mt-2 flex items-center justify-center flex-col'>
                                     <div className='text-primary font-semibold mt-4'>Total Outstanding to Pay</div>
-                                    <div className='text-black font-semibold mt-2 text-3xl'>₹{paymentInfo?.emiToPayment?.totalEmiToPay}</div>
+                                    <div className='text-black font-semibold mt-2 text-3xl'>{paymentInfo?.emiToPayment?.totalEmiToPay ? '₹'+paymentInfo?.emiToPayment?.totalEmiToPay : "N/A"}</div>
                                 </div>
                             </div>
 
