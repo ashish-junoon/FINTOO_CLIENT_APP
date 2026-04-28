@@ -28,6 +28,7 @@ import TempKYC from "./Pages/unprotected/TempKYC";
 import EnachSuccess from "./Pages/protected/EnachSuccess";
 import EnachFailure from "./Pages/protected/EnachFailure";
 import PaymentCard from "./components/utils/payment-card";
+import RegisterNach from "./Pages/protected/RegisterNach";
 
 
 function App() {
@@ -52,7 +53,7 @@ function App() {
               <Route path="/login" element={<Navigate to="/" />} />
               <Route path="/payment-status" element={<PaymentRedirect />} />
               <Route path="*" element={<Navigate to="/" />} />
-              <Route path="/test" element={<PaymentCard />} />
+              {/* <Route path="/test" element={<RegisterNach />} /> */}
               <Route path="/success" element={<EnachSuccess />} />
               <Route path="/failure" element={<EnachFailure />} />
             </Route>

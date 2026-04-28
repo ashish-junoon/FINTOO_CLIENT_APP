@@ -240,7 +240,6 @@ function RegisterNach() {
       created_by: "user",
       name: userInfo?.personalInfo?.[0]?.full_name,
       email: userInfo?.personalInfo?.[0]?.email_id,
-      // email: "testuser8@gmail.com",
       contact: userInfo?.mobile_number,
       description: "eMandate by Fynto user",
       maxAmount: Math.trunc(userInfo?.getAssignProduct[0]?.loan_amount * 4 * 100) || 10, // *100 to convert to paise
@@ -344,7 +343,7 @@ function RegisterNach() {
     }
 
     const options = {
-      key: "rzp_test_S6SaeMCb026ziW",
+      key: "rzp_live_Ryz7g9OmfkanfT",
       order_id: regData.orderId,
       customer_id: regData.customerId,
       recurring: "1",

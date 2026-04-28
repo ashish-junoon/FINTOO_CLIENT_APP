@@ -111,7 +111,7 @@ const PaymentCard = ({ emiData, emisheduleData }) => {
 
     const request = {
       amount: String(emiData?.totalEmiToPay * 100), //*100 for Rs
-      // amount: "2",
+      // amount: "100",
       callbackUrl: `${window.location.origin}/`,
       name: userInfo?.personalInfo[0]?.full_name,
       email: userInfo?.personalInfo[0]?.email_id,
