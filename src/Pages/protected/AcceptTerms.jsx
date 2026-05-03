@@ -172,6 +172,7 @@ function AcceptTerms() {
                         is_loan_consent: true,
                     }));
                     toast.success(response.message);
+                    getAgreementLetter(); // to update agreement
                 } else {
                     toast.error(response.message);
                 }
