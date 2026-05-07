@@ -72,9 +72,7 @@ function RegisterNach() {
     const req = {
       success_url: `${location.origin}/success`,
       failure_url: `${location.origin}/failure`,
-      // amount: (userInfo?.getAssignProduct[0]?.loan_amount * 4) || 10,
-      amount: 10,  // test
-      // amount: userInfo?.selectedproduct[0]?.loan_amount,
+      amount: (userInfo?.getAssignProduct[0]?.loan_amount * 4),
       email: userInfo?.personalInfo[0]?.email_id,
       phone: userInfo?.mobile_number,
       frequency: "daily",
@@ -242,10 +240,11 @@ function RegisterNach() {
       email: userInfo?.personalInfo?.[0]?.email_id,
       contact: userInfo?.mobile_number,
       description: "eMandate by Fynto user",
-      maxAmount: Math.trunc(userInfo?.getAssignProduct[0]?.loan_amount * 4 * 100) || 10, // *100 to convert to paise
-      // maxAmount: 1000, //10Rs, test purpose
+      maxAmount: Math.trunc(userInfo?.getAssignProduct[0]?.loan_amount * 4 * 100), // *100 to convert to paise
+      // maxAmount: 100, //10Rs, test purpose
       accountNumber: userInfo?.bankInfo?.[0]?.account_number,
       ifsc: userInfo?.bankInfo?.[0]?.ifsc_code,
+      frequency: "1",
     }
     try {
       // const response = await registerEMandate(req);
