@@ -139,6 +139,7 @@ function ProtectedLayout() {
 
                     </div>
                 </div>
+                <div className="absolute bottom-2 right-3">© {new Date().getFullYear()} Powered by <span className="text-white">LogicAI</span></div>
             </div>
 
         </div>

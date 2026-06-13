@@ -241,7 +241,7 @@ function RegisterNach() {
       contact: userInfo?.mobile_number,
       description: "eMandate by Fynto user",
       maxAmount: Math.trunc(userInfo?.getAssignProduct[0]?.loan_amount * 4 * 100), // *100 to convert to paise
-      // maxAmount: 100, //10Rs, test purpose
+      // maxAmount: 100, //1Rs, test purpose
       accountNumber: userInfo?.bankInfo?.[0]?.account_number,
       ifsc: userInfo?.bankInfo?.[0]?.ifsc_code,
       frequency: "1",

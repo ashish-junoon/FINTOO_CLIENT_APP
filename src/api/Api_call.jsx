@@ -328,7 +328,8 @@ export const verifyPANCard = async (req) => {
 //Verify PAN Card- eKYC SALORA
 export const verifyPANCardBySalora = async (req) => {
     try {
-        const response = await api.post("/Salora/SaloraPanValidation/Pan-Validate_V1", req);
+        // const response = await api.post("/Salora/SaloraPanValidation/Pan-Validate_V1", req);
+        const response = await api.post("/Salora/SaloraPanValidation/Pan-Validate-V1", req);
         return response.data;
     } catch (error) {
         console.error("Verify PAN Card:", error.response?.data || error.message);
@@ -362,7 +363,8 @@ export const verifyAadharCard = async (req) => {
 //Verify Aadhar Card- eKYC Salora
 export const verifyAadharCardBySalora = async (req) => {
     try {
-        const response = await api.post("/Salora/SaloraDigilockergenerateUrl/Digilocker-GenerateUrl_V1", req);
+        // const response = await api.post("/Salora/SaloraDigilockergenerateUrl/Digilocker-GenerateUrl_V1", req);
+        const response = await api.post("/Salora/SaloraDigilockergenerateUrl/Digilocker-GenerateUrl-V1", req);
         return response.data;
     } catch (error) {
         console.error("Verify Aadhar Card:", error.response?.data || error.message);
@@ -373,7 +375,8 @@ export const verifyAadharCardBySalora = async (req) => {
 //Get Aadhar Details- Salora
 export const GetAadhaarDetailsBySalora = async (req) => {
     try {
-        const response = await api.post("/Salora/SaloraDigilockerSaveDetails/Digilocker-SaveDetails_V1", req);
+        // const response = await api.post("/Salora/SaloraDigilockerSaveDetails/Digilocker-SaveDetails_V1", req);
+        const response = await api.post("/Salora/SaloraDigilockerSaveDetails/Digilocker-SaveDetails-V1", req);
         return response.data;
     } catch (error) {
         console.error("Get Aadhar Details:", error.response?.data || error.message);
@@ -430,8 +433,8 @@ export const registerEMandateEaseBuze = async (req) => {
 //Register eMandate Salora
 export const registerEMandateBySalora = async (req) => {
     try {
-        // const response = await api.post("/Salora/SaloraEMandate/e-Mandate", req);
-        const response = await api.post("/Salora/SaloraEMandate/Combined-Process-eMandate_V1", req);
+        // const response = await api.post("/Salora/SaloraEMandate/Combined-Process-eMandate_V1", req);
+        const response = await api.post("/Salora/SaloraEMandate/Combined-Process-eMandate-V1", req);
         return response.data;
     } catch (error) {
         console.error("Register eMandate:", error.response?.data || error.message);
@@ -442,7 +445,8 @@ export const registerEMandateBySalora = async (req) => {
 //Register eMandate Salora
 export const checkMandateStatusBySalora = async (req) => {
     try {
-        const response = await api.get(`/Salora/SaloraMandateStatus/e-MandateStatus_V1/?orderId=${req?.orderId}&comapny_id=${req?.comapny_id}&product_name=${req?.product_name}&user_id=${req?.user_id}&lead_id=${req?.lead_id}&created_by=${req?.created_by}&mandate_account_number=${req?.mandate_account_number}`);
+        // const response = await api.get(`/Salora/SaloraMandateStatus/e-MandateStatus_V1/?orderId=${req?.orderId}&comapny_id=${req?.comapny_id}&product_name=${req?.product_name}&user_id=${req?.user_id}&lead_id=${req?.lead_id}&created_by=${req?.created_by}&mandate_account_number=${req?.mandate_account_number}`);
+        const response = await api.get(`/Salora/SaloraMandateStatus/e-MandateStatus-V1/?orderId=${req?.orderId}&comapny_id=${req?.comapny_id}&product_name=${req?.product_name}&user_id=${req?.user_id}&lead_id=${req?.lead_id}&created_by=${req?.created_by}&mandate_account_number=${req?.mandate_account_number}`);
         return response.data;
     } catch (error) {
         console.error("Register eMandate:", error.response?.data || error.message);
@@ -621,7 +625,7 @@ export const CreatePaymentLinkEaseBuzz = async (req) => {
 // payment link/pg by salora
 export const CreatePaymentLinkSalora = async (req) => {
     try {
-        const response = await api.post("/Salora/PayinCreateLink/Payin-CreateLink_V1", req);
+        const response = await api.post("/Salora/PayinCreateLink/Payin-CreateLink-V1", req);
         return response.data;
     } catch (error) {
         console.error("Payment Gateway Error:", error.response?.data || error.message);

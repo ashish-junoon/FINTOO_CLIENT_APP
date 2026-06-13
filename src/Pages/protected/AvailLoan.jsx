@@ -351,7 +351,7 @@ function AvailLoan({ product, handleApply }) {
                     <Link
                       className="underline text-blue-500"
                       target="_blank"
-                      to="https://saloracapital.com/term-condition.php"
+                      to="https://saloracapital.com/terms-and-conditions"
                     >
                       terms & conditions
                     </Link>{" "}
